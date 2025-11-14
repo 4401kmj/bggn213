@@ -1,2 +1,2 @@
 # bggn213
-BGGN213 Bioinformatics GitHub Repository @ UCSD
+BGGN213 Bioinformatics GitHub Repository @ UC San Diego
