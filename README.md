@@ -1,5 +1,7 @@
 BGGN213 Bioinformatics GitHub Repository @ UC San Diego
 
+Class 04: [Bioinformatics data analysis with R](class04/class04.md)
+
 Class 05: [Data exploration and visualization in R](class05/classs05.md)
 
 Class 06: [R functions and R packages from CRAN and BioConductor](class06/class06.md)
