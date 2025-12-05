@@ -1,0 +1,2 @@
+"0","pc.xray <- pca(pdbs)"
+"0","plot(pc.xray, 1:2)"

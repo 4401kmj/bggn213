@@ -1,0 +1,16 @@
+"0","m <- nma(adk_A)"
+"1"," Building Hessian..."
+"1","		Done in"
+"1"," "
+"1","0.04"
+"1"," "
+"1","seconds.
+"
+"1"," Diagonalizing Hessian..."
+"1","	Done in"
+"1"," "
+"1","0.363"
+"1"," "
+"1","seconds.
+"
+"0","plot(m)"

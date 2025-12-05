@@ -1,0 +1,101 @@
+---
+title: "Class 6: R functions"
+author: "Minjun Kang (PID: A69042800)"
+format: pdf
+toc: true
+---
+
+All functions in R have at least 3 things:
+
+- A **name**, we pick this and use it to call our function,
+- Multiple or single input **arguments**
+- The **body** lines of R code that do the work
+
+## Our first function
+
+Write a function to add some numbers
+
+```{r}
+add <- function(x, y=1){
+  x + y
+}
+```
+```{r}
+add(10, 100)
+```
+
+## A second function
+
+Write a function to generate random nucleotide sequences of a user specified length
+
+```{r}
+sample(c("A", "C", "G", "T"), size=5, replace=TRUE)
+```
+
+I want the a 1 element long character vector that looks CACAG...
+
+```{r}
+v <- sample(c("A", "C", "G", "T"), size=5, replace=TRUE)
+paste(v, collapse = "")
+
+generate_dna <- function(size = 50, fasta=TRUE){
+  v <- sample(c("A", "C", "G", "T"), size, replace=TRUE)
+  s <- paste(v, collapse = "")
+  
+  if (fasta){
+    return(s)
+  } else{
+    return(v)
+  }
+}
+```
+
+```{r}
+generate_dna(60, TRUE)
+```
+
+
+## A protein generating function
+
+```{r}
+generate_protein <- function(size = 50, fasta = TRUE) {
+  # 20 standard amino acids (single-letter codes)
+  amino_acids <- c("A", "R", "N", "D", "C", 
+                   "E", "Q", "G", "H", "I", 
+                   "L", "K", "M", "F", "P", 
+                   "S", "T", "W", "Y", "V")
+  
+  # Sample amino acids
+  v <- sample(amino_acids, size, replace = TRUE)
+  s <- paste(v, collapse = "")
+  
+  if (fasta) {
+    return(s)
+  } else {
+    return(v)
+  }
+}
+```
+
+```{r}
+generate_protein(50)
+```
+
+Use our new `generate_protein()` function to make random protein sequences of length 6 to 12 (i.e., one length 6, one length 7, etc. up to length 12)
+
+```{r}
+length <- 6:12
+for (i in length){
+  cat(">", i, "\n", sep="")
+  a <- generate_protein(i)
+  cat(a)
+  cat("\n")
+}
+```
+
+A third, and better, way to solve this is to use the `apply()` family of functions, specifically the `sapply()` function in the case.
+
+```{r}
+sapply(length, generate_protein)
+```
+

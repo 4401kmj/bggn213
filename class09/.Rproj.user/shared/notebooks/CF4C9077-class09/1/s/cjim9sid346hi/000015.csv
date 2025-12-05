@@ -1,0 +1,5 @@
+"0","# Explort data
+df <- readr.csv('data.csv')
+"
+"2","Error in readr.csv(""data.csv"") : could not find function ""readr.csv""
+"

@@ -1,0 +1,7 @@
+"0","library(ggplot2)
+plot(x, col = k$cluster) +
+points(k$centers, col=""blue"", pch=15)
+"
+"1","integer(0)
+"
+"0",""

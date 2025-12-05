@@ -1,0 +1,7 @@
+"0","pve <- wisc.pr$sdev^2 / sum(wisc.pr$sdev^2)"
+"0",""
+"0","# Plot variance explained for each principal component"
+"0","plot(pve, xlab = ""Principal Component"", "
+"0","     ylab = ""Explained Variance"", "
+"0","     ylim = c(0, 1), type = ""o"")"
+"0",""

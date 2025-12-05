@@ -1,0 +1,6 @@
+"0","adk <- read.pdb(""1ake"")"
+"1","  Note: Accessing on-line PDB file
+"
+"1","   PDB has ALT records, taking A only, rm.alt=TRUE
+"
+"0","adk_A <- trim.pdb(adk, chain=""A"")"

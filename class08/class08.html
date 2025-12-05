@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Minjun Kang (PID: A69042800)">
+
+<title>Class 08: Breast Cancer Mini Project</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="class08_files/libs/clipboard/clipboard.min.js"></script>
+<script src="class08_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="class08_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="class08_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="class08_files/libs/quarto-html/popper.min.js"></script>
+<script src="class08_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="class08_files/libs/quarto-html/anchor.min.js"></script>
+<link href="class08_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="class08_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="class08_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="class08_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="class08_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#data-import" id="toc-data-import" class="nav-link" data-scroll-target="#data-import">Data import</a></li>
+  <li><a href="#principal-component-analysis-pca" id="toc-principal-component-analysis-pca" class="nav-link" data-scroll-target="#principal-component-analysis-pca">Principal Component Analysis (PCA)</a></li>
+  <li><a href="#interpreting-pca-results" id="toc-interpreting-pca-results" class="nav-link" data-scroll-target="#interpreting-pca-results">Interpreting PCA results</a></li>
+  <li><a href="#hierarchical-clustering" id="toc-hierarchical-clustering" class="nav-link" data-scroll-target="#hierarchical-clustering">Hierarchical Clustering</a></li>
+  <li><a href="#combining-pca-hierarchical-clustering" id="toc-combining-pca-hierarchical-clustering" class="nav-link" data-scroll-target="#combining-pca-hierarchical-clustering">Combining PCA + Hierarchical Clustering</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Class 08: Breast Cancer Mini Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Minjun Kang (PID: A69042800) </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>The goal of this mini-project is for you to explore a complete analysis using the unsupervised learning techniques covered in class. We’ll extend what we learned by combining PCA as a preprocessing step to clustering using data that consist of measurements of cell nuclei of human breast masses. This expands on our RNA-Seq analysis from last day.</p>
+<p>The data itself comes from the Wisconsin Breast Cancer Diagnostic Data Set first reported by K. P. Benne and O. L. Mangasarian: “Robust Linear Programming Discrimination of Two Linearly Inseparable Sets”.</p>
+<p>Values in this data set describe characteristics of the cell nuclei present in digitized images of a fine needle aspiration (FNA) of a breast mass.</p>
+</section>
+<section id="data-import" class="level2">
+<h2 class="anchored" data-anchor-id="data-import">Data import</h2>
+<p>The data is available as a CSV from the class website:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>fna.data <span class="ot">&lt;-</span> <span class="st">"WisconsinCancer.csv"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>wisc.df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(fna.data, <span class="at">row.names=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Make sure we do not include patient (sample) ID for the further analysis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>diagnosis <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(wisc.df<span class="sc">$</span>diagnosis)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>wisc.data <span class="ot">&lt;-</span> wisc.df[, <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>wisc.data <span class="ot">&lt;-</span> <span class="fu">subset</span>(wisc.data, <span class="at">select =</span> <span class="sc">-</span>X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p>Q1. How many observations are in this dataset?</p>
+</blockquote>
+<p>There are 569 observations in this dataset.</p>
+<blockquote class="blockquote">
+<p>Q2. How many of the observations have a malignant diagnosis?</p>
+</blockquote>
+<p>There are 212 observations.</p>
+<blockquote class="blockquote">
+<p>Q3. How many variables/features in the data are suffixed with _mean?</p>
+</blockquote>
+<p>There are 10 variables with _mean.</p>
+</section>
+<section id="principal-component-analysis-pca" class="level2">
+<h2 class="anchored" data-anchor-id="principal-component-analysis-pca">Principal Component Analysis (PCA)</h2>
+<p>The main function in base R for PCA is called <code>prcomp()</code>. A optional argument <code>scale</code> should nearly always be switched to <code>scale=TRUE</code> for this function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>wisc.pr <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(wisc.data, <span class="at">scale=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s make our main result figure - the “PC plot”or “score plot”, “ordienation plot” …</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wisc.pr<span class="sc">$</span>x, <span class="fu">aes</span>(PC1, PC2, <span class="at">col=</span>diagnosis)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="class08_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Q4. From your results, what proportion of the original variance is captured by the first principal components (PC1)?</p>
+</blockquote>
+<p>Explained variance is 44.2720256%.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pve <span class="ot">&lt;-</span> wisc.pr<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> <span class="fu">sum</span>(wisc.pr<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot variance explained for each principal component</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pve, <span class="at">xlab =</span> <span class="st">"Principal Component"</span>, </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Explained Variance"</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">type =</span> <span class="st">"o"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="class08_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Q5. How many principal components (PCs) are required to describe at least 70% of the original variance in the data?</p>
+</blockquote>
+<p>3 PCs are required to describe at least 70% of the original variance.</p>
+<blockquote class="blockquote">
+<p>Q6. How many principal components (PCs) are required to describe at least 90% of the original variance in the data?</p>
+</blockquote>
+<p>7 PCs are required to describe at least 90% of the original variance.</p>
+</section>
+<section id="interpreting-pca-results" class="level2">
+<h2 class="anchored" data-anchor-id="interpreting-pca-results">Interpreting PCA results</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">biplot</span>(wisc.pr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="class08_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Q7. What stands out to you about this plot? Is it easy or difficult to understand? Why?</p>
+</blockquote>
+<p>Rownames are used to label each dots in the plot, which makes us hard to understand.</p>
+<blockquote class="blockquote">
+<p>Q8. Generate a similar plot for principal components 1 and 3. What do you notice about these plots?</p>
+</blockquote>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wisc.pr<span class="sc">$</span>x, <span class="fu">aes</span>(PC1, PC3, <span class="at">col=</span>diagnosis)) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"PC1"</span>, <span class="at">y=</span><span class="st">"PC3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="class08_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Q9. For the first principal component, what is the component of the loading vector (i.e.&nbsp;wisc.pr$rotation[,1]) for the feature concave.points_mean? This tells us how much this original feature contributes to the first PC.</p>
+</blockquote>
+<p>It is -0.26. We can use <code>wisc.pr$rotation[, 1]['concave.points_mean']</code>.</p>
+</section>
+<section id="hierarchical-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="hierarchical-clustering">Hierarchical Clustering</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data.scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(wisc.data)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>data.dist <span class="ot">&lt;-</span> <span class="fu">dist</span>(data.scaled)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>wisc.hclust <span class="ot">&lt;-</span> <span class="fu">hclust</span>(data.dist, <span class="at">method=</span><span class="st">"complete"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p>Q10. Using the plot() and abline() functions, what is the height at which the clustering model has 4 clusters?</p>
+</blockquote>
+<p>The height is 19.5.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(wisc.hclust)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fl">19.5</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">lty=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="class08_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>wisc.hclust.clusters <span class="ot">&lt;-</span> <span class="fu">cutree</span>(wisc.hclust, <span class="at">k =</span> <span class="dv">4</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">table</span>(wisc.hclust.clusters, diagnosis)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p>Q11. OPTIONAL: Can you find a better cluster vs diagnoses match by cutting into a different number of clusters between 2 and 10? How do you judge the quality of your result in each case?</p>
+</blockquote>
+<p>I think there would be at least 3 hierarchical clusters in order to minimize the number of out-of-cluster samples. The out-of-cluster datapoints were calculated for each cluster with a minority number. However, increasing the number of clusters would fall into the overfitting issue, so using 3 would be the best choice considering the generalizability of the model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>res_all <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (kk <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>) {</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  wisc.hclust.clusters <span class="ot">&lt;-</span> <span class="fu">cutree</span>(wisc.hclust, <span class="at">k =</span> kk)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  res <span class="ot">&lt;-</span> <span class="fu">table</span>(wisc.hclust.clusters, diagnosis)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  res_all <span class="ot">&lt;-</span> <span class="fu">c</span>(res_all, <span class="fu">sum</span>(<span class="fu">apply</span>(res, <span class="dv">1</span>, min)))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>, res_all, <span class="at">xlab=</span><span class="st">'num of clusters'</span>, <span class="at">ylab=</span><span class="st">'out-of-cluster datapoints'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="class08_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="combining-pca-hierarchical-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="combining-pca-hierarchical-clustering">Combining PCA + Hierarchical Clustering</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>wisc.pr<span class="sc">$</span>x[, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   PC1           PC2          PC3
+842302     -9.18475521  -1.946870030 -1.122178766
+842517     -2.38570263   3.764859063 -0.528827374
+84300903   -5.72885549   1.074228589 -0.551262540
+84348301   -7.11669126 -10.266555635 -3.229947535
+84358402   -3.93184247   1.946358977  1.388544953
+843786     -2.37815462  -3.946456430 -2.932296681
+844359     -2.23691506   2.687666414 -1.638471247
+84458202   -2.14141428  -2.338186649 -0.871180715
+844981     -3.17213315  -3.388831138 -3.117243065
+84501001   -6.34616284  -7.720380945 -4.338098744
+845636      0.80970132   2.656937673 -0.488400053
+84610002   -2.64876984  -0.066509405 -1.525113359
+846226     -8.17783882  -2.698602007  5.725193241
+846381     -0.34182514   0.967428026  1.715661982
+84667401   -4.33856172  -4.856809832 -2.813639832
+84799002   -4.07207318  -2.974443983 -3.122526655
+848406     -0.22985277   1.563382114 -0.801813642
+84862001   -4.41412695  -1.417423150 -2.268323145
+849014     -4.94435304   4.110716528 -0.314472408
+8510426     1.23597583   0.188049490 -0.592761930
+8510653     1.57677384  -0.572304625 -1.799863016
+8510824     3.55420904  -1.661487969  0.450790799
+8511133    -4.72904972  -3.302058265 -1.465247427
+851509     -4.20482441   5.123858059 -0.751740573
+852552     -4.94528075   1.542395143 -1.711687827
+852631     -7.09232236  -2.016835734 -0.028984132
+852763     -3.50717666  -2.169715994 -3.891122637
+852781     -3.06136021   1.874902631  2.579478032
+852973     -4.00374127  -0.536769860 -2.759197831
+853201     -1.71380176   1.522365502  0.146058578
+853401     -6.05411853   0.756511800 -0.348932376
+853612     -2.89968469  -4.001774373 -2.998823809
+85382601   -4.55077848  -0.337239419 -0.753637681
+854002     -4.98621538   1.131593223 -2.575118337
+854039     -2.98271631  -0.757756497 -3.490690279
+854253     -2.76393718   0.354044421 -1.895295337
+854268     -1.29505925  -0.912393466 -1.574383382
+854941      3.74601730   1.412230504  1.730784885
+855133      0.99719148   3.348346731  4.301788720
+855138     -0.76459136  -0.885464837 -2.702540362
+855167      2.14906252   1.922300194 -1.179446370
+855563      0.09324934  -2.258764532 -1.903051997
+855625     -9.08001023  -2.016898441  2.139343894
+856106     -0.98958304  -0.984064148 -2.308702241
+85638502    0.29328849   0.136978564 -3.299029123
+857010     -5.37620991   0.134758404 -1.677366657
+85713702    4.57790860  -1.482915508  0.042037623
+85715      -1.69851237  -2.350203862 -3.075383081
+857155      2.13456708  -0.095745364 -1.491099878
+857156      1.56610099   1.207370855 -0.368834570
+857343      3.53979091   1.281368110  1.017315805
+857373      3.15503795   1.687473796 -0.495857416
+857374      3.44745515   0.497780720 -0.152383875
+857392     -3.29964761   1.129943574  0.825666100
+857438      0.67402621   2.114549137 -1.394992302
+85759902    2.85564577  -0.152588874  0.428557855
+857637     -4.64465207   2.308301508 -0.728168145
+857793     -2.17494916  -0.971261438 -1.942179421
+857810      3.71818738   1.786070097  1.278807604
+858477      4.13232693  -2.401679261 -1.241865694
+858970      2.38373822  -2.755233814  1.213018303
+858981      2.57661610  -3.135912650  1.399049169
+858986     -4.75492832  -3.009032875 -0.166094576
+859196      2.31209785  -3.265116721  2.793766025
+85922302   -1.69012080  -1.539322116 -1.798262954
+859283     -1.81071217  -0.722104815 -1.464960560
+859464      2.78347559  -2.308617372  0.472309720
+859465      3.51555502   0.657730736  0.590855071
+859471     -4.32619605  -9.194435552  1.491650337
+859487      3.25841241   0.937013647  0.204949679
+859575     -2.70221851   4.433240985  0.307075192
+859711      0.30758513  -7.381317396  3.815728542
+859717     -5.49886689  -0.937500513 -2.208188675
+859983      0.36139121  -0.119633821 -2.039161544
+8610175     2.62766457   0.696696349 -0.583428281
+8610404    -1.42691206   1.965372092  1.110961327
+8610629     0.83378424  -1.963876860  0.789737653
+8610637    -6.22541880  -0.919260690  0.089748341
+8610862   -11.65845644  -4.744442593  2.004115633
+8610908     2.01980045   0.254675746 -0.647302452
+861103      1.63694460  -1.714440587  0.433824539
+8611161    -1.16643527  -2.512305286 -1.904043397
+8611555   -10.75977535   2.255997858  0.038801648
+8611792    -5.03038488  -0.773728357  2.679979922
+8612080     2.17255269  -0.496441169 -0.948257444
+8612399    -3.28534463   1.666770480  0.146802675
+86135501   -0.60707378  -0.162071919  1.635935419
+86135502   -3.58041324   2.204721916 -1.703037100
+861597      0.93333687  -0.926885919 -0.040128345
+861598     -1.25849730  -1.014684255 -0.080521995
+861648      1.58686770   1.618232954  0.309726682
+861799     -0.25227559   0.530884425  0.588809736
+861853      2.84492835   2.891103732  0.527524677
+862009      1.96322268   0.964308498 -0.081136715
+862028     -2.77342525  -0.557509977 -0.605238702
+86208      -4.39236314   2.121640892  0.579000549
+86211       2.58980407  -0.213446120  1.034701089
+862261      3.90090576  -1.189020421  1.550616806
+862485      2.81575365  -0.367560567 -1.350247556
+862548     -0.61573908  -0.638349988 -0.199743121
+862717      0.43247968   1.390820523 -0.082646762
+862722      4.55102442  -3.525683788 -0.215074716
+862965      3.44515217   1.423370040 -0.088646005
+862980      2.11410008  -1.847747782 -0.556184595
+862989      2.68898618  -1.418813334  0.968298772
+863030     -3.21109134  -4.043198634 -2.712997305
+863031      0.74861266  -1.796058175 -0.567866143
+863270      3.15622889   1.034838878 -1.489373670
+86355     -13.04464395  -0.980650357  0.598286247
+864018      2.22672053  -0.666823902 -1.090600727
+864033      2.49063954  -2.596401708  1.668257671
+86408       0.10325957  -2.278139015  2.107708229
+86409      -3.58813694  -3.922881433  2.045207163
+864292      1.34776279  -3.553098748  1.730668471
+864496      2.50791098  -3.248461200 -1.686140767
+864685      2.04423086  -0.304616836 -0.533369397
+864726      2.09522559  -3.663872062  3.629007335
+864729     -3.10779316  -1.568009873 -2.611638159
+864877     -4.95236801  -2.382749650 -1.933405900
+865128     -0.85026612   2.304707468  0.566963050
+865137      2.96339173  -0.371179883 -2.064716427
+86517      -3.33120209   1.324392029  0.727373652
+865423    -12.88327621  -2.314585873  6.323133317
+865432      0.77006610   0.064052860 -1.133411514
+865468      2.20057925   0.734958544  0.266845303
+86561       3.14064881   1.875758557 -0.669779705
+866083      0.63831885   0.910564828 -2.140840449
+866203     -1.91744627   3.534971966  1.253821297
+866458     -1.40762980  -1.303782215  0.640864876
+866674     -4.63960895   1.480714297 -1.169651383
+866714      1.87581684  -1.421979452 -1.069870821
+8670       -1.43081046   1.048681220 -1.260901861
+86730502   -1.35143790   1.153126842 -1.208729712
+867387      0.70849143   1.566853657 -0.669405084
+867739     -2.16950708   2.823776101 -0.561613332
+868202      1.97510247   0.419018755 -0.380240597
+868223      2.59850310   0.481911436  1.870726668
+868682      3.25514318   0.417953651 -0.691197447
+868826     -3.77870160  -0.859625218  3.667773435
+868871      1.99028348  -1.328186508  1.134246527
+868999      5.01059989  -0.574194748 -0.841697543
+869104     -1.34383800   1.273650278  0.555354894
+869218      2.45380972  -0.897665441  0.352823033
+869224      1.83566648   0.090946742 -1.444010288
+869254      4.34266862   0.892786708  0.638694049
+869476      0.73216868  -3.698927716  0.657926113
+869691     -2.39788795  -4.833735642 -1.027253164
+86973701   -0.39275308  -1.082115915  2.245629588
+86973702    0.41196533   0.389288784 -1.044851048
+869931      3.04724369   2.235817239 -0.469040276
+871001501   1.44129554  -0.305601552  0.551062974
+871001502  -0.08311297  -7.144073768 -0.059957215
+8710441    -7.08707084 -12.562140869  7.352238887
+87106       3.74011364  -0.250281306 -0.097297641
+8711002     0.96832079  -0.944113582 -0.890028129
+8711003     2.41659356  -0.005547532 -0.797678511
+8711202    -4.09718264   0.378470806  1.445046044
+8711216     0.75094226   3.067949187  1.447907672
+871122      3.65143365   0.674055644 -0.906188637
+871149      4.67609710   1.102886823 -0.257081973
+8711561     0.59725624  -1.784081072  1.480433343
+8711803    -3.38435289   2.908477953  3.004594027
+871201     -6.14447970   2.015878994 -1.564766888
+8712064     1.32386648  -1.468002337  0.847675513
+8712289    -5.48932277   4.162167037 -0.600732185
+8712291     2.99476813   2.736453261 -0.161042080
+87127       4.38287625  -0.006866240 -0.947274735
+8712729    -1.21256768   2.037246395  0.979834026
+8712766    -5.06520424   1.783582969  1.172615291
+8712853     1.97596280   1.841159394 -0.277115927
+87139402    2.51266554  -0.114151857 -0.496186180
+87163       0.94665494   1.683272444 -0.350877607
+87164      -2.81688978  -1.263990953 -2.151251366
+871641      3.48092345  -1.618268077  2.673117328
+871642      4.65463399   0.222718846  1.557987797
+872113      5.34691339  -1.025855214  0.324700222
+872608     -1.16986842  -7.008319996  4.268106508
+87281702   -2.95370292  -0.705800822 -1.041419103
+873357      4.97132782   3.383227983  0.439451738
+873586      4.06045289   1.245070643  0.573972801
+873592     -9.50430706   5.598558052 -0.636679193
+873593     -8.99924714  -0.580520281 -3.131959404
+873701     -0.75821134   1.607118481 -1.513763762
+873843      2.65702172  -0.539461132  1.705514033
+873885      0.38967611   0.988372689 -2.582896564
+874158      3.88564657  -0.815354285  1.014824328
+874217     -0.36455538   3.571318842 -2.222023387
+874373      2.83339783   0.398379162 -0.347139642
+874662      3.30737348  -0.155604280  0.541002917
+874839      3.35435293   1.102762109  0.151956099
+874858     -6.51738201  -8.004126824 -0.326136731
+875093      1.71622508   0.542688019  3.295475582
+875099      5.56084294   0.477427493  4.123834207
+875263     -1.77809695  -2.774146213 -0.941934046
+87556202   -2.60918908  -1.560049030 -0.217995141
+875878      2.81656023   0.969257722 -0.382255094
+875938     -2.49624245  -2.276479790  1.318318594
+877159     -1.27590451   2.441111044  2.464148795
+877486     -3.47014398   2.275846405 -1.237595112
+877500     -1.25557034  -0.382057094 -3.834946034
+877501      1.47213604  -0.116787496 -0.214479145
+877989     -1.64801062   2.100442902 -0.974414210
+878796     -9.02864522   0.654596849  0.221085545
+87880      -4.55058603  -3.083925626 -2.268408346
+87930       0.78050321  -0.652275325 -0.643091145
+879523      0.22289648   0.701204504 -2.268765765
+879804      3.45185811  -1.305789765 -0.029238791
+879830     -0.44615183   2.785257008  0.443991604
+8810158    -0.31416180  -2.075734301 -2.081480386
+8810436     2.05738166   2.470613908 -1.460433790
+881046502  -4.80474158   3.026440019  2.741606351
+8810528     2.99607430   0.396429212 -0.595941573
+8810703   -12.27421974   7.536778599 10.103533703
+881094802  -3.36923202  -2.585550416  7.085840019
+8810955    -2.50656080  -2.612349885  0.206198902
+8810987    -1.31690973  -2.152585453 -1.785061911
+8811523     0.38841453  -2.274796314  0.626780574
+8811779     2.75450931  -1.085879226  1.705737291
+8811842    -4.93923501   2.845820436  0.913075404
+88119002   -4.29429880   4.662172958 -0.006834994
+8812816     2.37141521   0.732757814 -1.524685925
+8812818     0.96634003  -0.438052741 -1.446423567
+8812844     2.97318270  -1.809381711 -0.223238842
+8812877    -1.80166175  -0.166314618 -2.626288708
+8813129     2.47618073   1.417329346 -0.316254972
+88143502    0.82531310   1.249148354  0.267725157
+88147101    3.89127342  -0.538097276 -0.880783727
+88147102    0.38923560   0.613875324 -1.351679911
+88147202    1.45604019   0.201549415 -1.097912687
+881861     -2.75314552  -3.462726769 -2.471875866
+881972     -3.25439115   0.125090426 -2.893551435
+88199202    4.01560693   1.353056834 -0.360155815
+88203002    3.67318128   1.290493562  0.424237023
+88206102   -3.31340866   3.935689268 -0.205273062
+882488      4.03305870  -1.161524089  0.189581014
+88249602    2.33218128   1.347793816  0.232482459
+88299702   -8.39645911   4.150252991  0.046927784
+883263     -2.64524110   3.947699392  1.370675284
+883270      0.68116951   1.134992457  1.232581929
+88330202   -3.34735048   2.152675899 -1.107968825
+88350402    2.22576208   1.213931555 -0.192244621
+883539      4.47364832   1.739598699 -0.887426246
+883852     -1.32145867  -4.785266054 -0.661952674
+88411702    1.84846341   1.582735509  1.262806090
+884180     -3.79222888   1.025330459  0.897845626
+884437      2.27931254  -2.075859442  2.428512195
+884448      3.22593164   1.171043084  0.264431658
+884626     -1.02499890  -2.359186109 -1.615464155
+88466802    2.58028546  -0.728572047 -0.547660903
+884689      2.48369783  -0.460191483 -0.598393817
+884948     -7.13756174   2.073018195  1.087430513
+88518501    3.02981522   0.648897838  0.310409540
+885429     -7.07878207  -0.527758800 -1.278861780
+8860702    -1.31294375   1.773865017 -1.671161321
+886226     -3.70838653   2.805008998 -1.754649703
+886452     -0.46007427  -0.393819769 -1.003815294
+88649001   -6.38703001   1.821491443  0.479427881
+886776     -5.25092469  -3.891107226 -0.833120389
+887181     -8.72618338  -3.276993966  2.901146761
+88725602   -3.68807276  -1.064709236 -3.512498419
+887549     -3.37528098   3.368264175 -1.765224543
+888264      0.83947101   3.497008034  0.182323228
+888570     -3.28148526   0.989802279  2.552140777
+889403      1.90709089   3.119201237 -1.062121558
+889719     -1.61336234   2.472397898 -1.989384336
+88995002   -6.61390681   5.997998811  0.988507976
+8910251     1.46338831  -1.685149061  1.168877382
+8910499     2.01038350   1.102516460  1.336847795
+8910506     2.28233204  -0.009485293 -0.450043551
+8910720     0.73909276  -3.149749158  1.468565664
+8910721     4.50260070   3.166486414 -0.187896260
+8910748     3.15597737  -0.409941090 -1.107842420
+8910988    -7.66940121   3.072602737  1.480656591
+8910996     3.63593673  -1.588189625  0.715650110
+8911163    -0.33704893   3.141609173 -0.115619749
+8911164     1.27546111  -0.848306563  3.067369195
+8911230     4.34219338   0.321694999  0.388133185
+8911670    -0.01741547   3.456302110  0.306650981
+8911800     3.48935577   2.631766723 -0.072124181
+8911834     1.86490793   0.901271186 -0.870402828
+8912049    -4.95590744   1.339944038 -1.455772409
+8912055     2.46855062   0.137904923  1.793307382
+89122      -3.78173258   1.900235409 -1.742708503
+8912280    -2.63493731  -0.576647607 -1.992946242
+8912284     1.37147827  -0.005800358  1.547927203
+8912521     4.13524399   1.375298123  0.877276691
+8912909     0.68633639  -1.693519506  1.025310679
+8913        4.30833870   1.976746804 -0.251085558
+8913049    -0.40295486  -3.720160654  4.582436940
+89143601    3.00096526  -0.353848878  1.232930128
+89143602   -3.13125303  -4.269702670  5.861122345
+8915        0.41746954   0.807865734 -1.092330348
+891670      1.41897459  -1.392752638 -0.836251021
+891703      2.86806475   0.268408338 -0.468574962
+891716      3.36288672   0.806890637 -0.806369895
+891923      3.31208587   1.440908382 -0.583119519
+891936      4.76551701   0.542484530  0.893082182
+892189      2.38378528   0.823391074  1.982219343
+892214      2.78464581   2.530807159 -0.883257225
+892399      3.39085817  -0.753301131  1.770235939
+892438     -6.58444233   1.483557076  0.361022239
+892604      1.45405111  -0.591422478  1.145332613
+89263202   -7.17661843  -0.055097580  2.011148288
+892657      3.57568917  -0.890799182  0.261257526
+89296       3.05434514   0.179055836  0.621226832
+893061      3.07173303   0.305789373  1.258146621
+89344       3.85015201   1.523386003 -1.143503482
+89346       5.38551771  -0.555766489  0.559577694
+893526      4.65358767   3.062692587 -0.075942289
+893548      4.02400169   2.540671520  0.352906609
+893783      3.34487880   0.068502773 -0.269955756
+89382601    3.29694105   3.135950089  0.148761476
+89382602    2.13452598   0.004388987 -0.055090483
+893988      4.03446724   0.240486452 -1.326959165
+894047      3.76210430  -4.394333943  3.946735131
+894089      4.86695697   2.337158334 -0.168146877
+894090      4.74307511   1.796820963  0.169570993
+894326     -1.89365006   2.390134936 -1.675017462
+894329     -1.57154834  -6.503377021  2.165253786
+894335      4.02308037   1.400973753  3.183698584
+894604      1.29372783  -3.467757378  1.108552569
+894618     -1.83322742   4.317723823  0.316406925
+894855      1.80878902  -0.395858988 -1.229252510
+895100     -7.23012357   0.035670411 -2.838568987
+89511501    3.14288478   0.741873771 -0.861593396
+89511502    2.88472980   0.464323069 -0.475325102
+89524       3.14688506   1.769691255 -0.035802185
+895299      4.62431058   1.834004631  0.064174505
+8953902    -2.24853190   0.348229535 -1.063814825
+895633     -2.10594822  -1.120987593  1.773597643
+896839     -1.78437991   0.268984957 -1.721001037
+896864      0.52723271  -1.264758769 -0.919631937
+897132      3.21067592  -1.102473082  1.610564041
+897137      4.38256677   0.760434627 -0.400245248
+897374      3.80666840   0.909118626  0.442778081
+89742801   -3.31675558   1.575666422  1.359532256
+897604      2.39117199  -0.989160421 -0.756844005
+897630     -4.67605183   0.967741443 -0.291016193
+897880      3.06499827  -1.134839030  0.374293207
+89812      -7.34675421   5.238014242  0.316677175
+89813      -0.29505357  -0.226735533 -1.088458865
+898143      1.93726491  -2.542750760 -1.000543159
+89827       2.07535283  -1.804931340 -1.166053416
+898431     -4.97078859   1.331400687  0.870211875
+89864002    2.17500311  -0.958068260 -0.234058923
+898677      2.42941383  -3.444173357  3.453905770
+898678      3.36500493   0.562434015 -0.192404359
+89869       1.20553704   1.315886497 -0.929922572
+898690      3.32315522  -0.474753848 -0.897496041
+899147      1.92709976  -1.460184989 -0.100554033
+899187      4.03828183   1.355724562  0.537868401
+899667     -6.17684877  -5.103514894  0.520682438
+899987    -10.92468559   3.699998472 -0.890910165
+9010018    -2.11663452  -0.296368297  0.866722769
+901011      3.00954689  -0.243545681  1.981989096
+9010258     0.98178471  -0.796551513  2.367338148
+9010259    -0.35757923  -2.125968004  0.707586438
+901028      3.19111003   1.847526445  0.099310968
+9010333     2.99060189  -1.629958015  2.554470244
+901034301   3.19110631  -0.578830133  0.489333658
+901034302   4.58792496   2.758699732  0.979680613
+901041      2.48373073   1.187894183  0.348470172
+9010598     2.39655663   0.250524355 -0.326850211
+9010872     0.77892982   2.122475872  0.320506876
+9010877     3.13722800   1.486714010 -1.197824530
+901088     -2.73260737   3.941699950 -0.017154393
+9011494    -6.22155168   1.388887616  2.731833465
+9011495     2.22182078   0.356846723 -1.100713817
+9011971    -5.30247440   6.717504288  1.484358772
+9012000    -7.24162919   3.652255530 -0.155565119
+9012315    -4.20352196  -1.175208822 -1.588620367
+9012568     2.49743889   2.016761090 -0.730631718
+9012795    -3.63181933   1.954720962 -0.828046542
+901288     -3.51615443   3.855214937 -1.021630135
+9013005     2.61264945   1.101505251 -1.239645246
+901303      0.09602363   0.129733431 -1.669994689
+901315     -2.04305926  -6.421169887  1.273001142
+9013579     3.06405348   2.180177374 -0.278817341
+9013594     1.60217670  -0.292338995 -1.584830948
+9013838    -3.76262144  -5.980033549 -4.876070721
+901549      0.92475292  -2.300457270 -1.594708683
+901836      3.28545874  -0.201134359 -0.627204410
+90250       1.55348525  -0.978996316  1.195507876
+90251       0.39842934  -2.159312724 -0.944773717
+902727      2.29854534   0.931258175 -1.128959899
+90291       0.54242409   1.315910048  0.994879134
+902975      2.05700950  -0.320153445 -0.122350756
+902976      3.42150749   2.443368505  0.045009146
+903011      0.47199125  -3.699574203  1.952067274
+90312      -4.69936579   0.195783486  3.753730061
+90317302    3.64017727  -0.786168171 -1.161124120
+903483      3.59152918  -2.602797030  1.850401478
+903507     -4.14544978  -0.766814129 -0.887194062
+903516     -7.66539681   0.859727681 -2.151756805
+903554      2.00861205  -0.429311811 -0.103997306
+903811      2.91826573   1.698977554  0.295467269
+90401601    0.50029759  -0.106637635 -1.027843564
+90401602    1.90981814   0.650821226  1.449013512
+904302      3.78177167   0.325859645 -1.057150017
+904357      2.70601296   0.219472629 -0.314228262
+90439701   -6.28414409  -2.034757025 -3.179284831
+904647      3.42775463   0.991737410 -0.731051348
+904689      1.99962900   0.293068594  0.618659534
+9047        2.47111877   0.334752480 -1.481058853
+904969      3.64405137   1.240273815  1.385405524
+904971      2.34412427  -0.682141105  1.131738080
+905189      1.14199209   1.960446508 -1.239628958
+905190      1.34966974  -0.369249002  2.484489568
+90524101   -2.76094145   1.077685260 -1.178586912
+905501      1.96759233   0.175693916  0.420361503
+905502      2.92861019   0.494421191 -1.016176763
+905520      2.92380175  -0.377000536 -0.886014238
+905539      3.99267514  -0.959012260  0.204224433
+905557     -0.15500167   0.437623166 -0.461040030
+905680      0.93326963   2.104094210  1.431657320
+905686      1.92792536  -0.891682104  0.042307522
+905978      2.62003325  -2.499901968  2.432858840
+90602302   -5.99833869   0.090949196  1.709697317
+906024      2.91930912   0.009204582 -0.900511128
+906290      3.33900683   0.022205192  0.502858739
+906539      2.01314368  -0.777767778  0.125468395
+906564     -1.98671401  -2.314011967  1.235217081
+906616      1.66813615  -0.861560770 -1.009417991
+906878      0.37085180  -0.113512779 -0.997485893
+907145      1.84733447  -2.538995601  2.003584668
+907367      4.69890766   0.431922385  0.005300424
+907409      1.28205907  -2.548666752 -0.083786622
+90745       2.31221232  -0.401678043  0.274381769
+90769601    4.65498928   0.781611021  0.191953023
+90769602    3.94000659   2.028231657  0.691127602
+907914     -4.94550694  -3.003421435 -1.752529645
+907915      0.91499842  -2.476833776  0.362287911
+908194     -4.54511193   0.815283142 -0.518299038
+908445     -4.43843746   0.991566424  1.441051113
+908469      2.19305464   1.803766114 -0.434726892
+908489     -0.66385679  -0.436476802 -2.678425146
+908916      2.23890605   0.454189872 -0.465118333
+909220      2.12331215   1.193746541  0.489940891
+909231      2.61301823   1.830449830  0.763657618
+909410      3.20814515   2.233177743 -0.166078298
+909411      0.30648073  -2.183077955  0.039251705
+909445     -2.47018342   1.498506224  0.590933256
+90944601    3.45168126   2.134583340  0.196989342
+909777      3.89709781  -0.730133530  2.134193239
+9110127    -0.98086448   2.208486712 -1.698424795
+9110720     1.25614629  -1.066752885  0.259247160
+9110732    -3.24256054   1.776795240 -1.791577273
+9110944     1.55585043   1.037014643 -1.300101127
+911150      1.24815985   1.587442008 -0.326126484
+911157302  -4.32784530   4.045772565 -0.192336290
+9111596     1.07650412  -1.802032564  1.779475879
+9111805    -2.50954497   2.526584455  0.797500590
+9111843     2.21514321  -0.029865010  0.635900610
+911201      1.17279871   0.474422064 -0.481147553
+911202      2.83380799   1.017230750 -1.485323075
+9112085     1.85545330   1.570011674  0.825756166
+9112366     1.32744636  -0.776412499  1.255653387
+9112367     2.80030738   1.664836753 -0.193847761
+9112594     3.17177797   2.073908798  0.074834422
+9112712     4.08348433   0.484283961  0.630808963
+911296201  -3.47243837   1.671413723  0.856073545
+911296202 -16.30488665   7.769016888  6.229933870
+9113156     2.55786437   2.491852880  0.170162861
+911320501   2.96627878   0.068786611 -0.777727248
+911320502   2.75500634   1.792341696 -0.757147909
+9113239    -1.36913518  -2.108156394 -0.852969723
+9113455     0.41729731  -0.116417262 -0.535671262
+9113514     3.83502421  -0.898388162  0.699948069
+9113538    -5.92575082  -1.227216861  1.720074272
+911366     -0.64491119  -3.422999542  0.607750202
+9113778     2.68148698  -1.442286469  0.339105123
+9113816     2.03986918   0.902461858  2.840741857
+911384      1.39806620   1.770668244 -1.478260847
+9113846     3.53330636   1.245758018  3.382434941
+911391      1.98877953  -1.897792693 -2.029212586
+911408      1.99642872   0.206189711 -1.639882150
+911654      0.52020039   0.972512103 -0.323850426
+911673      3.16958159   2.087215768 -0.977945244
+911685      2.20077374  -1.284908734 -0.886619084
+911916     -3.82107090  -2.303209735  0.027521977
+912193      2.98286009   0.672747298 -0.589970772
+91227       2.47887396   2.361880555 -0.432234246
+912519      1.27099312  -0.509385643 -2.237023334
+912558      2.23319191   1.297562775 -0.900644424
+912600      0.05613371   0.227183495 -2.253532782
+913063     -2.31535334  -4.385275755  1.776847691
+913102      2.28232306   2.464672105 -0.820466562
+913505     -4.75043499   1.488114177 -1.252648906
+913512      1.72479328  -0.997300316 -0.080167877
+913535      0.74112965   2.449879331 -1.995953713
+91376701    2.89176621   0.977084588 -0.804935982
+91376702    1.65306732   4.551659142  0.751661685
+914062     -3.10079133   1.235066483  1.286223339
+914101      4.06069761   0.560461075  2.174771231
+914102      2.79087498   1.076940539  0.843799658
+914333      1.47362330   1.589695437  0.319710133
+914366      0.22919297  -1.514570755 -2.214334625
+914580      2.55101378   0.763228924 -1.607988258
+914769     -3.71243855   1.057755506  0.521494703
+91485      -5.09036286   2.017432706 -0.708746074
+914862      0.60008810   0.837717560 -0.686437977
+91504      -2.78794673  -3.382584454 -0.752414277
+91505       1.40753273  -1.504446838 -0.353584900
+915143     -7.25279714   5.490904302  1.909245947
+915186     -1.29772469  -7.723057325 -0.688309017
+915276     -1.07574673  -8.287483337  0.433810751
+91544001    1.24866183  -1.594281055 -1.355282076
+91544002    1.25582341  -4.113567176 -0.412366931
+915452      1.16550969   1.664229389 -0.737229323
+915460     -4.09054331  -2.800463137 -0.506987325
+91550       1.88597978  -1.670721680  0.119692299
+915664      2.76500279   2.159148972 -0.021077623
+915691     -2.22503669  -1.939927827 -2.283594176
+915940      1.13058210   1.409761524 -0.564556376
+91594602    0.73312738   1.941988438 -0.274994234
+916221      2.33161916  -0.789451973 -0.349735677
+916799     -2.69485257   1.942001189 -0.959719996
+916838     -3.37604410   2.331377578 -1.200875536
+917062      0.19969487  -1.075413752 -0.672557052
+917080      1.17499204  -1.010481061 -0.711142576
+917092      1.29150016  -4.959860548  0.345622908
+91762702   -8.62316838   3.456410638 -0.178899380
+91789       4.42556234   0.785345015 -0.473002900
+917896      0.61929383  -0.635789842 -0.488421490
+917897      3.24945659  -1.284794677 -0.218284421
+91805       3.34997942  -2.670950443 -1.777523046
+91813701    0.85904712  -0.096763381 -2.811570840
+91813702    3.15384692   0.870776432 -2.193784489
+918192     -0.34622347  -1.539870352  2.843951628
+918465      2.45924278  -0.600319751 -1.170435277
+91858       1.52875558  -0.404861554  0.603933344
+91903901    1.77202587  -0.803503014 -2.026135257
+91903902    2.67808519   1.483403662 -1.740162222
+91930402   -4.02489378   2.938844225  1.658026507
+919537      2.13447312  -1.517245623  0.178807901
+919555     -5.16086993   2.380108987 -0.421906048
+91979701   -0.53546080  -0.380380451 -0.442745212
+919812     -0.34282174  -3.531373815  0.069607554
+921092      4.19339024  -2.365311059  1.325978010
+921362      1.14182718  -5.594535868  1.299893249
+921385      1.66401100  -2.387517361  1.500928782
+921386     -1.01082308  -1.091429307 -0.632142163
+921644      1.29978604   1.819814057  0.372979316
+922296      2.37134219   1.680097929  0.384190094
+922297      1.66440651   0.213774641 -0.147942249
+922576      1.92598353   1.136739705  0.477781900
+922577      4.23349159  -0.184110499 -0.326131445
+922840      2.67551655  -2.313756961 -0.053800867
+923169      3.83312511  -0.495813665  0.922428047
+923465      2.54919727  -0.228129228  1.412934778
+923748      4.69079604   0.766803238  1.542607509
+923780      2.02325691  -1.260133116  0.504482203
+924084      2.89340232   1.450359601  0.779859803
+924342      3.49912218  -1.799249342  2.764024589
+924632      2.15201013   0.829339088  0.564300199
+924934      2.05327740  -1.615038205  1.837342797
+924964      3.87388097  -1.083301553  1.858308794
+925236      4.06028949  -0.122061034  3.235925374
+925277      0.09858059   0.213372093  0.388587548
+925291      1.08841850  -1.291711328  1.428122289
+925292      0.48134743   0.177863190  1.031200235
+925311      4.86602793   2.129232607  3.411187296
+925622     -5.91241029  -3.479575000 -3.259923297
+926125     -8.73365338   0.573350185  0.896301447
+926424     -6.43365455   3.573672989  2.457324373
+926682     -3.79004753   3.580897052  2.086640366
+926954     -1.25507494   1.900624364  0.562235817
+927241    -10.36567336  -1.670540206 -1.875379194
+92751       5.47042990   0.670047220  1.489132801</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

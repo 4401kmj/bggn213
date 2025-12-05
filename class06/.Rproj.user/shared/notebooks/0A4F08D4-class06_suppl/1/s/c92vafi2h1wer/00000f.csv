@@ -1,0 +1,23 @@
+"0","# Can you improve this analysis code?"
+"0","library(bio3d)"
+"0",""
+"0","s1 <- read.pdb(""4AKE"") # kinase with drug"
+"1","  Note: Accessing on-line PDB file
+"
+"0","s2 <- read.pdb(""1AKE"") # kinase no drug"
+"1","  Note: Accessing on-line PDB file
+"
+"1","   PDB has ALT records, taking A only, rm.alt=TRUE
+"
+"0","s3 <- read.pdb(""1E4Y"") # kinase with drug"
+"1","  Note: Accessing on-line PDB file
+"
+"0","s1.chainA <- trim.pdb(s1, chain=""A"", elety=""CA"")"
+"0","s2.chainA <- trim.pdb(s2, chain=""A"", elety=""CA"")"
+"0","s3.chainA <- trim.pdb(s1, chain=""A"", elety=""CA"")"
+"0",""
+"0","s1.b <- s1.chainA$atom$b"
+"0","s2.b <- s2.chainA$atom$b"
+"0","s3.b <- s3.chainA$atom$b"
+"0",""
+"0","plotb3(s1.b, sse=s1.chainA, typ=""l"", ylab=""Bfactor"")"

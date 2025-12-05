@@ -1,0 +1,191 @@
+---
+title: "Class 09: Structural Bioinformatics part 1"
+author: "Minjun Kang (PID: A69042800)"
+format: gfm
+---
+
+## The PDB database
+
+The main repository for biomolecular structre data is the Protein Data Bank (PDB): https://www.rcsb.org
+
+Let's have a quick look at the composition of this database:
+
+```{r}
+# Package
+library(readr)
+
+# Explort data
+df <- read_csv('data.csv')
+```
+
+> Q1. What percentage of structures in the PDB are solved by X-Ray and Electron Microscopy
+
+It is about 81.43% and 12.27% for X-Ray and Electron Microscopy, respectively. 
+
+```{r}
+tot <- sum(df$Total)
+part <- sum(df$'X-ray')
+print(round(part/tot * 100, 2))
+part <- sum(df$EM)
+print(round(part/tot * 100, 2))
+```
+
+> Q2. What proportion of structures in the PDB are protein only?
+
+It is about 86.05%
+
+```{r}
+part <- sum(df$Total[1])
+print(round(part/tot * 100, 2))
+```
+
+> Q3. Make a bar plot overview of Molecular type.
+
+```{r}
+# For basic version
+library(ggplot2)
+ggplot(df, aes(x=reorder(`Molecular Type`, -Total), y=Total)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+```
+
+```{r}
+# For colored version
+df_long <- data.frame(
+  `Molecular.Type` = rep(df$`Molecular Type`, times = ncol(df) - 2), 
+  variable = rep(names(df)[2:8], each = nrow(df)),
+  value = c(df$`X-ray`, df$EM, df$NMR, df$Integrative, df$`Multiple methods`, df$Neutron, df$Other)
+)
+
+ggplot(df_long, aes(x = reorder(Molecular.Type, -value), y = value, fill = variable)) +
+  geom_col() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Visualizing structure data
+
+The Mol* viewer is embeded in many bioinformatics websites. The homepage is https://molstar.org. 
+
+I can insert any figure or image file using markdown format.
+
+![The HIV-Pr dimer with bound inhibitor](1HSG.png)
+
+![The HIV-Pr dimer with bound inhibitor](1HSG_spacefill.png)
+## Bio3D package for structural bioinformatics
+
+We can use the bio3d package to read and analyze biomolecular data in R: 
+
+```{r}
+library(bio3d)
+
+hiv <- read.pdb("1HSG")
+head(hiv$atom)
+```
+
+Let's get the sequence
+
+```{r}
+pdbseq( hiv )
+```
+
+Let's trim to chain A and get just it's sequence:
+
+```{r}
+chainA <- trim.pdb(hiv, chain="A")
+chainA.seq <- pdbseq(chainA)
+```
+
+Let's blast
+
+```{r blast_hiv, cache=TRUE}
+blast <- blast.pdb(chainA.seq)
+```
+
+```{r}
+head(blast$hit.tbl)
+```
+
+```{r}
+hits <- plot(blast)
+```
+
+```{r}
+hits$pdb.id
+```
+
+## Prediction of functional motions
+
+We can run an Normal Mode Analysis (NMA) to predict large sccale motions/flexibility/dynamics of any biomolecule that we can read into R. 
+
+Let's look ADK and chain A only!
+
+```{r, cache=TRUE}
+adk <- read.pdb("1ake")
+adk_A <- trim.pdb(adk, chain="A")
+```
+```{r}
+m <- nma(adk_A)
+plot(m)
+```
+
+Let's write out a "trajectory" of predicted motion
+
+```{r}
+mktrj(m, file="adk_nma.pdb")
+```
+
+## Play with 3D viewing in R
+
+We can use the new **bio3dview** package, which is not yet on CRAN, to render interactive 3D views in R and HTML quarto output reports. 
+
+To install from Github, we can use the **pak** package. 
+
+```{r}
+library(bio3dview)
+#view.pdb(adk)
+```
+
+## Comparative analysis of protein structures
+
+Starting with a sequence or structure ID (accession number) let's run a complete analysis pipeline.
+
+```{r}
+# library(bio3d)
+# 
+# id <- "1ake_A"
+# 
+# aa <- get.seq(id)
+# aa
+
+```
+
+```{r, cache=TRUE}
+# blast <- blast.pdb(aa)
+# hits <- plot(blast)
+```
+```{r}
+# hits$pdb.id
+```
+
+```{r}
+# files <- get.pdb(hits$pdb.id, path="pdbs", split=TRUE, gzip=TRUE)
+```
+```{r}
+# pdbs <- pdbaln(files, fit=TRUE, exefile="msa")
+```
+
+```{r}
+# pc.xray <- pca(pdbs)
+# plot(pc.xray, 1:2)
+```
+```{r}
+# library(bio3dview)
+# mktrj(pc.xray, file="pca_results.pdb")
+```
+
+```{r}
+# view.pca(pc.xray)
+```
+

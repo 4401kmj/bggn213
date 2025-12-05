@@ -1,0 +1,3 @@
+"0","diagnosis <- as.factor(wisc.df$diagnosis)"
+"0","wisc.data <- wisc.df[, -1]"
+"0","wisc.data <- subset(wisc.data, select = -X)"
