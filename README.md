@@ -9,3 +9,5 @@ Class 07: [Introduction to machine learning for Bioinformatics](class07/class07.
 Class 08: [Unsupervised Learning Mini-Project](class08/class08.md))
 
 Class 09: [Structural Bioinformatics (Focus on new AlphaFold2)](class09/class09.md))
+
+* these are some labs that I've worked in the class
